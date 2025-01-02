@@ -10,6 +10,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
+// Argh! Library
+#include "argh.h"
+
 int main() {
 	return EXIT_SUCCESS;
 }

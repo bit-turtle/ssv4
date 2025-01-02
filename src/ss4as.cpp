@@ -5,6 +5,9 @@
 
 #include <iostream>
 
+// Argh! Library
+#include "argh.h"
+
 int main() {
 	return EXIT_SUCCESS;
 }
