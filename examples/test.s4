@@ -1,0 +1,7 @@
+@400
+load 40
+set x
+load 50
+set y
+add
+zero load 5
