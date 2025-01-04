@@ -27,9 +27,23 @@ void instruction(uint8_t condition, uint8_t opcode, uint8_t operands) {
 	inst |= operands & 0xf;
 	rom[ptr] = inst;
 	ptr++;
-	std::cout << "instruction: 0x" << std::hex << static_cast<unsigned>(inst) << std::endl;
+	std::cout << "- instruction: 0x" << std::hex << static_cast<unsigned>(inst) << std::endl;
 }
 
+// Location Name Parser
+uint8_t location(std::string name) {
+	if (name == "x") return 0x0;
+	else if (name == "y") return 0x1;
+	else if (name == "instl") return 0x2;
+	else if (name == "insth") return 0x3;
+	else if (name == "addrl") return 0x4;
+	else if (name == "addrh") return 0x5;
+	else if (name == "memory") return 0x6;
+	else if (name == "port") return 0x7;
+	return 0xff;
+}
+
+// Compile Line
 bool compile(std::string code) {
 	if (debug) std::cout << "compile: " << code << std::endl;
 	std::stringstream tokens(code);
@@ -38,28 +52,61 @@ bool compile(std::string code) {
 	// Conditions
 	uint8_t condition = 0;
 	if (op == "zero") {
-		if (debug) std::cout << "condition: zero" << std::endl;
+		if (debug) std::cout << "- condition: zero" << std::endl;
 		condition = 1;
 		tokens >> op;
 	}
 	else if (op == "overflow") {
-		if (debug) std::cout << "condition: overflow" << std::endl;
+		if (debug) std::cout << "- condition: overflow" << std::endl;
 		condition = 2;
 		tokens >> op;
 	}
 	else if (op == "error") {
-		if (debug) std::cout << "condition: error" << std::endl;
+		if (debug) std::cout << "- condition: error" << std::endl;
 		condition = 3;
 		tokens >> op;
 	}
 	// Operations
-	if (debug) std::cout << "operation: " << op << std::endl;
+	if (debug) std::cout << "- operation: " << op << std::endl;
+	// Load Operations
 	if (op == "load") {
 		tokens >> op;
 		uint8_t value = std::stoi(op, nullptr, 0);
 		instruction(condition, 0b10, value & 0xf);
 		instruction(condition, 0b11, value >> 4);
 	}
+	else if (op == "loadl") {
+		tokens >> op;
+		uint8_t value = std::stoi(op, nullptr, 0);
+		instruction(condition, 0b10, value & 0xf);
+	}
+	else if (op == "loadh") {
+		tokens >> op;
+		uint8_t value = std::stoi(op, nullptr, 0);
+		instruction(condition, 0b11, value & 0xf);
+	}
+	// Data Move Operations
+	else if (op == "set") {
+		tokens >> op;
+		uint8_t id = location(op);
+		if (id == 0xff) {
+			std::cout << "Invalid Location!" << std::endl;
+			return false;
+		}
+		id &= 0x7;
+		instruction(condition, 0b00, id);
+	}
+	else if (op == "get") {
+		tokens >> op;
+		uint8_t id = location(op);
+		if (id == 0xff) {
+			std::cout << "Invalid Location!" << std::endl;
+			return false;
+		}
+		id &= 0x7;
+		instruction(condition, 0b00, id & 0x8);
+	}
+	// ALU Operations
 	return true;
 }
 

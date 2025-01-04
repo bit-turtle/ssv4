@@ -1,7 +1,28 @@
-@400
-load 40
+# This is a test file with all instructions accepted by the ss4as assembler
+
+# Comments Start at '#'
+
+# Load Commands
+load 80
+# The following commands are the same as the load command above
+loadl 0	# Load Bottom 4 bits
+loadh 5	# Load Top 4 bits
+
+# Set Commands
+load 2
 set x
-load 50
+load 5
 set y
-add
-zero load 5
+
+# Get Commands
+load 2
+set x
+load 5
+set y
+get x
+set y
+
+# Location Macro
+@200	# An '@' indicates a location macro
+# This load command is at location 200 in the rom
+load 1
