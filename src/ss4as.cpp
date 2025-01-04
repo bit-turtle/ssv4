@@ -71,23 +71,48 @@ bool compile(std::string code) {
 	// Load Operations
 	if (op == "load") {
 		tokens >> op;
-		uint8_t value = std::stoi(op, nullptr, 0);
+		if (debug) std::cout << "- operand: " << op << std::endl;
+		uint8_t value;
+		try {
+			value = std::stoi(op, nullptr, 0);
+		}
+		catch (...) {
+			std::cout << "Invalid Value!" << std::endl;
+			return false;
+		}
 		instruction(condition, 0b10, value & 0xf);
 		instruction(condition, 0b11, value >> 4);
 	}
 	else if (op == "loadl") {
 		tokens >> op;
-		uint8_t value = std::stoi(op, nullptr, 0);
+		if (debug) std::cout << "- operand: " << op << std::endl;
+		uint8_t value;
+		try {
+			value = std::stoi(op, nullptr, 0);
+		}
+		catch (...) {
+			std::cout << "Invalid Value!" << std::endl;
+			return false;
+		}
 		instruction(condition, 0b10, value & 0xf);
 	}
 	else if (op == "loadh") {
 		tokens >> op;
-		uint8_t value = std::stoi(op, nullptr, 0);
+		if (debug) std::cout << "- operand: " << op << std::endl;
+		uint8_t value;
+		try {
+			value = std::stoi(op, nullptr, 0);
+		}
+		catch (...) {
+			std::cout << "Invalid Value!" << std::endl;
+			return false;
+		}
 		instruction(condition, 0b11, value & 0xf);
 	}
 	// Data Move Operations
 	else if (op == "set") {
 		tokens >> op;
+		if (debug) std::cout << "- operand: " << op << std::endl;
 		uint8_t id = location(op);
 		if (id == 0xff) {
 			std::cout << "Invalid Location!" << std::endl;
@@ -98,6 +123,7 @@ bool compile(std::string code) {
 	}
 	else if (op == "get") {
 		tokens >> op;
+		if (debug) std::cout << "- operand: " << op << std::endl;
 		uint8_t id = location(op);
 		if (id == 0xff) {
 			std::cout << "Invalid Location!" << std::endl;
@@ -176,10 +202,18 @@ int main(int argc, char* argv[]) {
 
 			// Process Macros
 			if (code[0] == '@') {
+				if (debug) std::cout << "macro: " << code << std::endl;
 				// Set Rom Pointer
 				code.erase(code.begin());
-				ptr = std::stoi(code, nullptr, 0);
-				if (debug) std::cout << "location: 0x" << std::hex << ptr << std::endl;
+				try {
+					ptr = std::stoi(code, nullptr, 0);
+				}
+				catch (...) {
+					std::cout << "Invalid Value!" << std::endl;
+					std::cout << "Macro Error on Line " << std::dec << loc << "!" << std::endl;
+					return EXIT_FAILURE;
+				}
+				if (debug) std::cout << "- location: 0x" << std::hex << ptr << std::endl;
 
 				// Next Line
 				continue;
@@ -187,7 +221,7 @@ int main(int argc, char* argv[]) {
 
 			// Compile Code and Check for Errors
 			if (!compile(code)) {
-				std::cout << "Compile Error on Line " << loc << "!" << std::endl;
+				std::cout << "Compile Error on Line " << std::dec << loc << "!" << std::endl;
 				return EXIT_FAILURE;
 			}
 		}

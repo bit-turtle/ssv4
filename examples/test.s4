@@ -26,3 +26,10 @@ set y
 @200	# An '@' indicates a location macro
 # This load command is at location 200 in the rom
 load 1
+
+# Conditional Modifiers
+load 200
+set x
+set y
+add
+overflow load 2	# Runs only if there was an overflow
