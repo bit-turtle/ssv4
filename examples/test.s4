@@ -22,6 +22,14 @@ set y
 get x
 set y
 
+# ALU Commands
+load 2
+set x
+set y
+add
+set x
+subtract
+
 # Location Macro
 @200	# An '@' indicates a location macro
 # This load command is at location 200 in the rom

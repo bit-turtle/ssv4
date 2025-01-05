@@ -43,6 +43,27 @@ uint8_t location(std::string name) {
 	return 0xff;
 }
 
+// ALU Operation Parser
+uint8_t operation(std::string name) {
+	if (name == "resetflags") return 0x0;
+	else if (name == "resetopflags") return 0x1;
+	else if (name == "reseterror") return 0x2;
+	else if (name == "seterror") return 0x3;
+	else if (name == "add") return 0x4;
+	else if (name == "carryadd") return 0x5;
+	else if (name == "subtract") return 0x6;
+	else if (name == "borrowsubtract") return 0x7;
+	else if (name == "or") return 0x8;
+	else if (name == "xor") return 0x9;
+	else if (name == "and") return 0xa;
+	else if (name == "nand") return 0xb;
+	else if (name == "rightshift") return 0xc;
+	else if (name == "carryrightshift") return 0xd;
+	else if (name == "leftshift") return 0xe;
+	else if (name == "carryleftshift") return 0xf;
+	return 0xff;
+}
+
 // Compile Line
 bool compile(std::string code) {
 	if (debug) std::cout << "compile: " << code << std::endl;
@@ -133,6 +154,14 @@ bool compile(std::string code) {
 		instruction(condition, 0b00, id & 0x8);
 	}
 	// ALU Operations
+	else {
+		uint8_t id = operation(op);
+		if (id == 0xff) {
+			std::cout << "Invalid Command!" << std::endl;
+			return false;
+		}
+		instruction(condition, 0b01, id & 0xf);
+	}
 	return true;
 }
 
@@ -237,7 +266,15 @@ int main(int argc, char* argv[]) {
 	std::cout << "Compilation Finished!" << std::endl;
 
 	// Output Binary file
-	// TODO
+	std::ofstream output(bin);
+	if (!output.is_open()) {
+		std::cout << "Failed to open Output Binary File!" << std::endl;
+		return EXIT_FAILURE;
+	}
+	for (int i = 0; i < 65536; i++) {
+		output << rom[i];
+	}
+	output.close();
 
 	return EXIT_SUCCESS;
 }
