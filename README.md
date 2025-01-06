@@ -9,11 +9,13 @@ Using ss4as:
 All Platforms (Start by opening a terminal in this folder):
 1. `mkdir build`
 2. `cd build`
-3. `cmake ..`
+3. `cmake ..`  
+
 Windows (Use VS 2022 Terminal):
 1. `MSBuild.exe .\ss4as.vxproj -p:Configuration=Release`
 2. `MSBuild.exe .\ss4vm.vxproj -p:Configuration=Release`
 3. `cd Release`
-4. `cp ..\..\src\ss4as.bat .`
+4. `cp ..\..\src\ss4as.bat .`  
+
 Linux/Unix:
 1. `make all`
