@@ -1,5 +1,7 @@
 # ssv4: Super Seal Version 4
-ssv4 contains two projects
+[ssv4 instruction sheet](https://docs.google.com/spreadsheets/d/1uOwEtzu-f8msr8yjz1aJrdfqklxtp7U_aX8blZt-izU/edit?usp=sharing)
+
+The ssv4 repo contains two projects, ss4as and ss4vm
 ## ss4as: the assember for the ssv4 cpu
 Using ss4as:
 1. ss4as is a command line tool, run ss4as --help for more information
