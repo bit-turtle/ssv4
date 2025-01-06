@@ -1,6 +1,6 @@
 :: ss4as Windows Batch File
 
-@echo off
+@echo off &setlocal
 
 :: Message
 echo ss4as Assembler
@@ -8,11 +8,7 @@ echo ss4as Assembler
 :: File Chooser Dialog
 echo Choose Source Files . . .
 
-set files=
-
-for /f "delims=" %%I in ('powershell "Add-Type -AssemblyName System.Windows.Forms;$f = new-object Windows.Forms.OpenFileDialog;$f.InitialDirectory = pwd;$f.Filter = 'All Files (*.*)|*.*';$f.ShowHelp = $true;$f.Multiselect = $true;[void]$f.ShowDialog();if ($f.Multiselect) { $f.FileNames } else { $f.FileName }"') do (
-    set files=%files% %%~I
-)
+for /f "delims=" %%I in ('powershell "Add-Type -AssemblyName System.Windows.Forms;$f = new-object Windows.Forms.OpenFileDialog;$f.InitialDirectory = pwd;$f.Filter = 'All Files (*.*)|*.*';$f.ShowHelp = $true;$f.Multiselect = $true;[void]$f.ShowDialog();if ($f.Multiselect) { $f.FileNames } else { $f.FileName }"') do call set "files=%%files%% %%~I"
 
 echo Source Files: %files%
 
