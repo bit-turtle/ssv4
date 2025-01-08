@@ -6,10 +6,8 @@
 #include <iostream>
 #include <fstream>
 
-// SFML for Graphics
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
+// CImg for Graphics
+#include "CImg.h"
 
 // Argh! Library
 #include "argh.h"
@@ -44,8 +42,7 @@ enum iotype {
 	TIMER,
 	DISPLAY_X,
 	DISPLAY_Y,
-	DISPLAY,
-	HARDWARE,
+	DISPLAY_COLOR,
 };
 
 iotype iomap[0xff][0xff] = {
