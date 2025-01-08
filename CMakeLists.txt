@@ -5,6 +5,11 @@ project( ssv4 LANGUAGES CXX )
 add_executable( ss4as src/ss4as.cpp )
 target_compile_features( ss4as PRIVATE cxx_std_17 )
 
+# Copy ss4as.bat if on Windows
+if (WIN32)
+   configure_file( ${CMAKE_SOURCE_DIR}/src/ss4as.bat ${CMAKE_CURRENT_BINARY_DIR}/Release/ss4as.bat COPYONLY )
+endif()
+
 # Build ss4vm
 add_executable( ss4vm src/ss4vm.cpp )
 target_compile_features( ss4vm PRIVATE cxx_std_17 )
