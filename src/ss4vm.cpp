@@ -8,6 +8,13 @@
 
 // CImg for Graphics
 #include "CImg.h"
+using namespace cimg_library;
+
+// Display Variables
+CImg<uint8_t>* display;
+CImgDisplay* window;
+uint8_t display_x = 0;
+uint8_t display_y = 0;
 
 // Argh! Library
 #include "argh.h"
@@ -42,12 +49,13 @@ enum iotype {
 	TIMER,
 	DISPLAY_X,
 	DISPLAY_Y,
-	DISPLAY_COLOR,
+	DISPLAY_R,
+	DISPLAY_B,
+	DISPLAY_G
 };
 
 iotype iomap[0xff][0xff] = {
 	CONSOLE,
-	TIMER,
 };
 
 // Instruction Rom
@@ -55,6 +63,7 @@ uint8_t rom[0xff][0xff] = { 0 };
 
 // Hardware Values
 bool running = true;
+
 
 // Input Processing
 uint8_t input() {
@@ -110,11 +119,17 @@ int main(int argc, char* argv[]) {
 	}
 	// Load Rom File
 	for (int i = 0; i < 0xffff; i++) {
-		file >> rom[i];
+		char c;
+		file.get(c);
+		rom[i/0xff][i%0xff] = static_cast<uint8_t>(c);
 		if (file.eof()) break;
 	}
+	std::cout << "ROM Loaded!" << std::endl;
+	// Create Window
+	display = new CImg<uint8_t>(256,256,1,3,0);
+	window = new CImgDisplay(*display, "ss4vm");
 	// Virtual Machine Start
-	while (running) {
+	while (!window->is_closed()) {
 		// Get Instruction
 		uint8_t instruction = rom[insth][instl];
 		// Execute Instruction
