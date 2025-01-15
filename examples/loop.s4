@@ -1,0 +1,6 @@
+# y stores a pointer to the begining of th loop
+load 64
+set instl
+
+@64
+set instl

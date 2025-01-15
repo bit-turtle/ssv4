@@ -24,7 +24,7 @@ echo Output File: %filename%
 
 :: Run ss4as
 echo Running ss4as . . .
-.\ss4as.exe %files% -o %file%
+.\ss4as.exe %files% -o %filename%
 
 :: Wait For Keypress
 pause

@@ -1,0 +1,4 @@
+load 0x65	# Letter A
+set port	# Output
+load 0		# Pointer to Start
+set instl	# Jump to Start
