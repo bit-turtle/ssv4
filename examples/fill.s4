@@ -1,0 +1,94 @@
+# SSV4 Program to fill the screen
+
+# Initialization
+
+# Memory address 0, X Position
+load 0
+set addrl
+load 0
+set memory
+
+# Memory address 1, Y Position
+load 1
+set addrl
+load 0
+set memory
+
+# Memory address 2, Red Value
+load 2
+set addrl
+load 0xff
+set memory
+
+@64	# Main Loop
+
+# Increment X Position
+load 0
+set addrl
+get memory
+set x
+load 1
+set y
+add
+set memory
+
+# If Overflow Increment Y Position
+# Set the error flag temporaily
+overflow seterror
+error load 1
+error set addrl
+error get memory
+error set x
+error load 1
+error set y
+error add
+error set memory
+error reseterror
+
+# If Overflow Decrement R Value by 32
+overflow seterror
+error load 2
+error set addrl
+error get memory
+error set x
+error load 32
+error set y
+subtract
+error set memory
+error reseterror
+
+# Draw White Pixel at (X, Y)
+
+# Set Display X Position
+load 0
+set addrl
+get memory
+set x
+load 1	# Port 1: DISPLAY_X
+set addrl
+get x
+set port
+
+# Set Display Y Position
+load 1
+set addrl
+get memory
+set x
+load 2	# Port 2: DISPLAY_Y
+set addrl
+get x
+set port
+
+# Set Pixel R Value
+load 2
+set addrl
+get memory
+set x
+load 3	# Port 3: DISPLAY_R
+set addrl
+get x
+set port
+
+# Loop to Begining
+load 64
+set instl
