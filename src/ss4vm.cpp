@@ -6,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 
+// Thread for Speed
+#include <thread>
+
 // CImg for Graphics
 #include "CImg.h"
 using namespace cimg_library;
@@ -15,6 +18,13 @@ CImg<uint8_t>* display;
 CImgDisplay* window;
 uint8_t display_x = 0;
 uint8_t display_y = 0;
+
+// Display Update Loop
+void updatedisplay(bool* running) {
+	while (*running) {
+		window->display(*display);
+	}
+}
 
 // Argh! Library
 #include "argh.h"
@@ -114,18 +124,12 @@ void output(uint8_t value) {
 		} break;
 		case DISPLAY_R: {
 			display->atXY(display_x, display_y, 0) = value;
-			// Update Window
-			window->display(*display);
 		} break;
 		case DISPLAY_G: {
 			display->atXY(display_x, display_y, 1) = value;
-			// Update Window
-			window->display(*display);
 		} break;
 		case DISPLAY_B: {
 			display->atXY(display_x, display_y, 2) = value;
-			// Update Window
-			window->display(*display);
 		} break;
 		default:
 			std::cout << "Warning: Output Not Implemented" << std::endl;
@@ -234,7 +238,43 @@ void aluoperation(uint8_t operation) {
 			r = x - y - 1;
 			overflow = (r != check) ? true : false;
 		} break;
-		// Logic Operations TODO
+		// Logic Operations
+		case 0x8: {	// Or x and y
+			r = x | y;
+		} break;
+		case 0x9: {	// Xor x and y
+			r = x ^ y;
+		} break;
+		case 0xa: {	// And x and y
+			r = x & y;
+		} break;
+		case 0xb: {	// Nand x and y
+			r = ~(x ^ y);
+		} break;
+		case 0xc: {	// Rightshift x
+			bool shiftbit = (x | 0b1) ? true : false;
+			r = x >> 1;
+			// Overflow with bit shifted out
+			overflow = shiftbit;
+		} break;
+		case 0xd: {	// Carry Rightshift x
+			bool shiftbit = (x | 0b1) ? true : false;
+			r = x >> 1 | 0b10000000;	// Set leftmost bit
+			// Overflow with bit shifted out
+			overflow = shiftbit;
+		} break;
+		case 0xe: {	// Leftshift x
+			bool shiftbit = (x | 0b1) ? true : false;
+			r = x << 1;
+			// Overflow with bit shifted out
+			overflow = shiftbit;
+		} break;
+		case 0xf: {	// Carry Leftshift x
+			bool shiftbit = (x | 0b1) ? true : false;
+			r = x << 1 | 0b1;
+			// Overflow with bit shifted out
+			overflow = shiftbit;
+		} break;
 		default:
 			std::cout << "Warning: ALU Operation Not Implemented!" << std::endl;
 	}
@@ -300,6 +340,9 @@ int main(int argc, char* argv[]) {
 	// Create Window
 	display = new CImg<uint8_t>(256,256,1,3,0);
 	window = new CImgDisplay(*display, "ss4vm");
+	// Create Display Thread
+	bool displaythreadrunning = true;
+	std::thread displaythread(updatedisplay, &displaythreadrunning);
 	// Virtual Machine Start
 	bool increment = false;
 	while (!window->is_closed()) {
@@ -314,5 +357,8 @@ int main(int argc, char* argv[]) {
 		// Execute Instruction
 		increment = execute(instruction);
 	}
+	// Clean up Display Thread
+	displaythreadrunning = false;
+	displaythread.join();
 	return EXIT_SUCCESS;
 }
