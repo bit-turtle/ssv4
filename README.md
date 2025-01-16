@@ -4,9 +4,12 @@
 The ssv4 repo contains two projects, ss4as and ss4vm
 ## ss4as: the assember for the ssv4 cpu
 Using ss4as:
-1. ss4as is a command line tool, run ss4as --help for more information
+1. ss4as is a command line tool, run `ss4as --help` for more information
 2. On Windows, `ss4as.bat` can be used to run ss4as with a file selector gui
 ## ss4vm: the virtual machine for the ssv4 cpu
+Using ss4vm:
+1. ss4vm is a command line tool, run `ss4vm --help` for more information
+2. On Windows, `ss4vm.bat` can be used to run ss4vm with a file selector gui
 ## Building
 All Platforms (Start by opening a terminal in this folder):
 1. `mkdir build`

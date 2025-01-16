@@ -9,6 +9,9 @@
 // Thread for Speed
 #include <thread>
 
+// Chrono for Time
+#include <chrono>
+
 // CImg for Graphics
 #include "CImg.h"
 using namespace cimg_library;
@@ -23,6 +26,7 @@ uint8_t display_y = 0;
 void updatedisplay(bool* running) {
 	while (*running) {
 		window->display(*display);
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 }
 
@@ -317,10 +321,17 @@ bool execute(uint8_t instruction) {
 int main(int argc, char* argv[]) {
 	// Argh! Parser
 	argh::parser cmdl(argc, argv);
+	// Check for "--help" Flag
+	if (cmdl[{"-h","--help"}]) {
+		std::cout << "ss4vm help" << std::endl;
+		std::cout << "Usage: ss4vm [ROM File]" << std::endl;
+		std::cout << "-h, --help: Display this Help Message" << std::endl;
+		return EXIT_FAILURE;
+	}
 	// Check Parameters
 	if (!cmdl(1)) {
-		std::cout << "ss4vm help:" << std::endl;
-		std::cout << "Usage: ss4vm [rom file]" << std::endl;
+		std::cout << "No ROM File Specified!" << std::endl;
+		std::cout << "For help, run ss4vm --help" << std::endl;
 		return EXIT_FAILURE;
 	}
 	// Open Rom File
@@ -337,8 +348,9 @@ int main(int argc, char* argv[]) {
 		if (file.eof()) break;
 	}
 	std::cout << "ROM Loaded!" << std::endl;
-	// Create Window
+	// Create Internal Display
 	display = new CImg<uint8_t>(256,256,1,3,0);
+	// Create Window
 	window = new CImgDisplay(*display, "ss4vm");
 	// Create Display Thread
 	bool displaythreadrunning = true;
@@ -360,5 +372,6 @@ int main(int argc, char* argv[]) {
 	// Clean up Display Thread
 	displaythreadrunning = false;
 	displaythread.join();
+
 	return EXIT_SUCCESS;
 }
