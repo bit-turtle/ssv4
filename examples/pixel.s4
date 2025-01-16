@@ -1,0 +1,15 @@
+load 1
+set addrl
+load 100
+set port
+load 2
+set addrl
+load 100
+set port
+
+load 4
+set addrl
+load 0xff
+set port
+load 0
+set instl

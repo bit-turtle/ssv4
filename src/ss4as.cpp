@@ -150,8 +150,8 @@ bool compile(std::string code) {
 			std::cout << "Invalid Location!" << std::endl;
 			return false;
 		}
-		id &= 0x7;
-		instruction(condition, 0b00, id & 0x8);
+		id |= 0b1000;
+		instruction(condition, 0b00, id & 0b1111);
 	}
 	// ALU Operations
 	else {

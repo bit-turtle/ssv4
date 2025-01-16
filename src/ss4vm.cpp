@@ -55,18 +55,12 @@ uint8_t memory[0xff][0xff] = { 0 };
 
 // I/O Mapping
 enum iotype {
-	NONE = 0,
-	CONSOLE,
-	TIMER,
-	DISPLAY_X,
-	DISPLAY_Y,
-	DISPLAY_R,
-	DISPLAY_B,
-	DISPLAY_G
-};
-
-iotype iomap[0xff][0xff] = {
-	CONSOLE,
+	CONSOLE = 0,
+	DISPLAY_X = 1,
+	DISPLAY_Y = 2,
+	DISPLAY_R = 3,
+	DISPLAY_G = 4,
+	DISPLAY_B = 5,
 };
 
 // Instruction Rom
@@ -77,12 +71,27 @@ bool running = true;
 
 // Input Processing
 uint8_t input() {
-	iotype type = iomap[addrh][addrl];
+	iotype type = static_cast<iotype>(addrh << 8 | addrl);
 	switch (type) {
 		case CONSOLE: {
 			uint8_t input;
 			std::cin >> input;
 			return input;
+		} break;
+		case DISPLAY_X: {
+			return display_x;
+		} break;
+		case DISPLAY_Y: {
+			return display_y;
+		} break;
+		case DISPLAY_R: {
+			return display->atXY(display_x, display_y, 0);
+		} break;
+		case DISPLAY_G: {
+			return display->atXY(display_x, display_y, 1);
+		} break;
+		case DISPLAY_B: {
+			return display->atXY(display_x, display_y, 2);
 		} break;
 		default:
 			std::cout << "Warning: Input Not Implemented" << std::endl;
@@ -92,10 +101,31 @@ uint8_t input() {
 
 // Output Processing
 void output(uint8_t value) {
-	iotype type = iomap[addrh][addrl];
+	iotype type = static_cast<iotype>(addrh << 8 | addrl);
 	switch (type) {
 		case CONSOLE: {
 			std::cout << static_cast<char>(value);
+		} break;
+		case DISPLAY_X: {
+			display_x = value;
+		} break;
+		case DISPLAY_Y: {
+			display_y = value;
+		} break;
+		case DISPLAY_R: {
+			display->atXY(display_x, display_y, 0) = value;
+			// Update Window
+			window->display(*display);
+		} break;
+		case DISPLAY_G: {
+			display->atXY(display_x, display_y, 1) = value;
+			// Update Window
+			window->display(*display);
+		} break;
+		case DISPLAY_B: {
+			display->atXY(display_x, display_y, 2) = value;
+			// Update Window
+			window->display(*display);
 		} break;
 		default:
 			std::cout << "Warning: Output Not Implemented" << std::endl;
@@ -113,16 +143,16 @@ bool setlocation(uint8_t location) {
 			break;
 		case 0x2:
 			instl = r;
-			break;
+			return false;
 		case 0x3:
 			insth = r;
-			break;
+			return false;
 		case 0x4:
 			addrl = r;
-			return false;
+			break;
 		case 0x5:
 			addrh = r;
-			return false;
+			break;
 		case 0x6:
 			memory[addrh][addrl] = r;
 			break;
@@ -167,6 +197,44 @@ void getlocation(uint8_t location) {
 // Alu Function
 void aluoperation(uint8_t operation) {
 	switch (operation) {
+		// Flag Operations
+		case 0x0:	// Reset all flags
+			zero = false;
+			overflow = false;
+			error = false;
+			break;
+		case 0x1:	// Reset alu operation flags
+			zero = false;
+			overflow = false;
+			break;
+		case 0x2:	// Reset error flag
+			error = false;
+			break;
+		case 0x3:	// Set error flag
+			error = true;
+			break;
+		// Arithmetic Operations
+		case 0x4: {	// Add x and y
+			int check = x + y;
+			r = x + y;
+			overflow = (r != check) ? true : false;
+		} break;
+		case 0x5: {	// Add x and y with carry
+			int check = x + y + 1;
+			r = x + y + 1;
+			overflow = (r != check) ? true : false;
+		} break;
+		case 0x6: {	// Subtract x and y
+			int check = x - y;
+			r = x - y;
+			overflow = (r != check) ? true : false;
+		} break;
+		case 0x7: {	// Subtract x and y with borrow
+			int check = x - y - 1;
+			r = x - y - 1;
+			overflow = (r != check) ? true : false;
+		} break;
+		// Logic Operations TODO
 		default:
 			std::cout << "Warning: ALU Operation Not Implemented!" << std::endl;
 	}
@@ -233,14 +301,18 @@ int main(int argc, char* argv[]) {
 	display = new CImg<uint8_t>(256,256,1,3,0);
 	window = new CImgDisplay(*display, "ss4vm");
 	// Virtual Machine Start
+	bool increment = false;
 	while (!window->is_closed()) {
+		// Increment Instruction Register
+		if (increment) {
+			instl++;
+			if (instl == 0) insth++;
+		}
+		increment = true;
 		// Get Instruction
 		uint8_t instruction = rom[insth][instl];
 		// Execute Instruction
-		execute(instruction);
-		// Increment Instruction Register
-		instl++;
-		if (instl == 0) insth++;
+		increment = execute(instruction);
 	}
 	return EXIT_SUCCESS;
 }

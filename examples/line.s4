@@ -1,0 +1,25 @@
+# Initialize
+load 0
+set x
+load 1
+set y
+load 32
+set instl
+
+@32	# Main Loop
+add
+set x
+load 1
+set addrl
+get x
+set port
+load 2
+set addrl
+get x
+set port
+load 3
+set addrl
+load 0xff
+set port
+load 32
+set instl
