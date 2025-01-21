@@ -1,0 +1,43 @@
+# Endlessly accepts input and sends back the input
+
+# The Error flag is set when a newline is read
+
+# Select Console I/O
+load 0
+set addrh
+set addrl
+
+# Set Error for Prompt
+seterror
+
+# Start Loop
+load 16
+set instl
+
+# Loop
+@16
+
+# Output Prompt "> " if Error Flag
+error load 62
+error set port
+error load 32
+error set port
+
+# Reset Error
+reseterror
+
+# Get and Print Input
+get port
+set port
+
+# Test if newline
+set x
+load 10
+set y
+subtract
+# Set Error flag if equal
+zero seterror
+
+# Continue Loop
+load 16
+set instl

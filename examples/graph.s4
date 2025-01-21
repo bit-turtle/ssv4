@@ -1,0 +1,59 @@
+# Initialize
+
+# Grow Rate
+load 0
+set addrl
+load 1
+set memory
+
+@64
+
+# Plot Pixel
+load 0
+set addrl
+get memory
+set x
+load 2
+set addrl
+get x
+set port
+
+# Paint Pixel
+load 255
+set x
+load 3
+set addrl
+get x
+set port
+
+# Math
+load 0
+set addrl
+get memory
+set x
+load 1
+set addrl
+get port
+set y
+add
+set port
+load 0
+set addrl
+load 1
+set x
+add
+set memory
+
+# Increment Display X
+load 1
+set addrl
+get port
+set x
+load 1
+set y
+add
+set port
+
+# Loop
+load 64
+set instl

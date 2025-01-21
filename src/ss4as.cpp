@@ -17,7 +17,7 @@ uint8_t rom[65536] = { 0 };
 uint16_t ptr = 0;
 
 // Debug Message Flag
-bool debug = true;
+bool debug = false;
 
 // Write Instruction to Rom
 void instruction(uint8_t condition, uint8_t opcode, uint8_t operands) {
@@ -25,9 +25,13 @@ void instruction(uint8_t condition, uint8_t opcode, uint8_t operands) {
 	inst |= condition << 6;
 	inst |= opcode << 4;
 	inst |= operands & 0xf;
+	// Warning if existing data isn't 0x00
+	if (rom[ptr] != 0x00)
+		std::cout << "Warning: Possible Data Override at 0x" << std::hex << ptr << std::endl;
 	rom[ptr] = inst;
 	ptr++;
-	std::cout << "- instruction: 0x" << std::hex << static_cast<unsigned>(inst) << std::endl;
+	if (debug)
+		std::cout << "- instruction: 0x" << std::hex << static_cast<unsigned>(inst) << std::endl;
 }
 
 // Location Name Parser
@@ -178,9 +182,13 @@ int main(int argc, char* argv[]) {
 		std::cout << "ss4as help" << std::endl;
 		std::cout << "Usage: ss4as [Assembly Source Files...]" << std::endl;
 		std::cout << "-o, --output: Set Binary Output filename (Default: output.bin)" << std::endl;
+		std::cout << "-d, --debug: Display Debug Information" << std::endl;
 		std::cout << "-h, --help: Display this Help Message" << std::endl;
 		return EXIT_SUCCESS;
 	}
+
+	// Check for "--debug" Flag
+	if (cmdl[{"-d", "--debug"}]) debug = true;
 
 	// Names of Assembly Source files
 	std::vector<std::string> srcs;

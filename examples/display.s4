@@ -1,0 +1,33 @@
+# Select pixel (100,100)
+load 1
+set addrl
+load 100
+set port
+load 2
+set addrl
+load 100
+set port
+
+# White
+load 3
+set addrl
+load 0xff
+set port
+
+load 4
+set addrl
+load 0xff
+set port
+
+load 5
+set addrl
+load 0xff
+set port
+
+# Halt
+load 150
+set instl
+
+@150
+load 150
+set instl

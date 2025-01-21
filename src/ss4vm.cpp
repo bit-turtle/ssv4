@@ -88,8 +88,9 @@ uint8_t input() {
 	iotype type = static_cast<iotype>(addrh << 8 | addrl);
 	switch (type) {
 		case CONSOLE: {
-			uint8_t input;
-			std::cin >> input;
+			char c;
+			std::cin.get(c);
+			uint8_t input = static_cast<uint8_t>(c);
 			return input;
 		} break;
 		case DISPLAY_X: {
@@ -226,58 +227,70 @@ void aluoperation(uint8_t operation) {
 			int check = x + y;
 			r = x + y;
 			overflow = (r != check) ? true : false;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0x5: {	// Add x and y with carry
 			int check = x + y + 1;
 			r = x + y + 1;
 			overflow = (r != check) ? true : false;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0x6: {	// Subtract x and y
 			int check = x - y;
 			r = x - y;
 			overflow = (r != check) ? true : false;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0x7: {	// Subtract x and y with borrow
 			int check = x - y - 1;
 			r = x - y - 1;
 			overflow = (r != check) ? true : false;
+			zero = (r == 0) ? true : false;
 		} break;
 		// Logic Operations
 		case 0x8: {	// Or x and y
 			r = x | y;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0x9: {	// Xor x and y
 			r = x ^ y;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0xa: {	// And x and y
 			r = x & y;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0xb: {	// Nand x and y
 			r = ~(x ^ y);
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0xc: {	// Rightshift x
 			bool shiftbit = (x | 0b1) ? true : false;
 			r = x >> 1;
 			// Overflow with bit shifted out
 			overflow = shiftbit;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0xd: {	// Carry Rightshift x
 			bool shiftbit = (x | 0b1) ? true : false;
 			r = x >> 1 | 0b10000000;	// Set leftmost bit
 			// Overflow with bit shifted out
 			overflow = shiftbit;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0xe: {	// Leftshift x
 			bool shiftbit = (x | 0b1) ? true : false;
 			r = x << 1;
 			// Overflow with bit shifted out
 			overflow = shiftbit;
+			zero = (r == 0) ? true : false;
 		} break;
 		case 0xf: {	// Carry Leftshift x
 			bool shiftbit = (x | 0b1) ? true : false;
 			r = x << 1 | 0b1;
 			// Overflow with bit shifted out
 			overflow = shiftbit;
+			zero = (r == 0) ? true : false;
 		} break;
 		default:
 			std::cout << "Warning: ALU Operation Not Implemented!" << std::endl;
